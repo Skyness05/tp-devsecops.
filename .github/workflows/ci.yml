@@ -1,0 +1,29 @@
+name: CI/CD - democyber
+# Trigger the workflow on push or pull request to main
+on:
+push:
+branches: [ main ]
+pull_request:
+branches: [ main ]
+jobs:
+build-and-deploy:
+runs-on: ubuntu-latest
+env:
+DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/democyber:latest
+steps:
+# Checkout the code
+- name: Checkout repository
+uses: ac�ons/checkout@v3
+# Install Java
+- name: Set up JDK 21
+uses: ac�ons/setup-java@v3
+with:
+java-version: '21'
+distribu�on: 'temurin'
+
+# Compile Java code
+- name: Compile Java
+run: mvn compile
+# Build Maven
+- name: Build Java project with Maven
+run: mvn clean package
