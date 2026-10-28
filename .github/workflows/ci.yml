@@ -1,29 +1,35 @@
 name: CI/CD - democyber
-# Trigger the workflow on push or pull request to main
-on:
-push:
-branches: [ main ]
-pull_request:
-branches: [ main ]
-jobs:
-build-and-deploy:
-runs-on: ubuntu-latest
-env:
-DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/democyber:latest
-steps:
-# Checkout the code
-- name: Checkout repository
-uses: ac�ons/checkout@v3
-# Install Java
-- name: Set up JDK 21
-uses: ac�ons/setup-java@v3
-with:
-java-version: '21'
-distribu�on: 'temurin'
 
-# Compile Java code
-- name: Compile Java
-run: mvn compile
-# Build Maven
-- name: Build Java project with Maven
-run: mvn clean package
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/democyber:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      # (Optionnel) Scan secrets avant compilation
+      - name: Run Gitleaks scan
+        uses: zricethezav/gitleaks-action@v2
+
+      - name: Compile Java
+        run: mvn -B compile
+
+      - name: Build Java project with Maven
+        run: mvn -B clean package
