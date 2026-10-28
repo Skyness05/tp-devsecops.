@@ -2,9 +2,9 @@ name: CI/CD - democyber
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build-and-deploy:
@@ -17,16 +17,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Gitleaks scan (before compilation)
+      - name: Run Gitleaks scan
+        uses: zricethezav/gitleaks-action@v2
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
           cache: maven
-
-      # (Optionnel) Scan secrets avant compilation
-      - name: Run Gitleaks scan
-        uses: zricethezav/gitleaks-action@v2
 
       - name: Compile Java
         run: mvn -B compile
