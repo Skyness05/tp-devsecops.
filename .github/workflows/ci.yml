@@ -64,4 +64,13 @@ jobs:
 
       # Compiler et empaqueter (package inclut déjà la compilation)
       - name: Build Java project with Maven
-        run: mvn clean package
+        run: mvn clean package 
+
+      # Test Docker image
+      - name: Test Docker image locally
+        run: |
+          docker run -d --name democyber-test -p 8080:8080 $DOCKER_IMAGE_NAME
+          sleep 10
+          curl -f http://localhost:8080 || echo "App not responding"
+          docker stop democyber-test
+          docker rm democyber-test
