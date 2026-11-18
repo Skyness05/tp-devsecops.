@@ -62,3 +62,10 @@ jobs:
       # Compiler et empaqueter (package inclut déjà la compilation)
       - name: Build Java project with Maven
         run: mvn clean package
+
+      # Upload the Gitleaks report
+      - name: Upload Gitleaks report
+        uses: actions/upload-artifact@v4
+        with:
+         name: gitleaks-report
+         path: results.sarif
