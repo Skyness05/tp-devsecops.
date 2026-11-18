@@ -73,4 +73,15 @@ jobs:
           sleep 10
           curl -f http://localhost:8080 || echo "App not responding"
           docker stop democyber-test
-          docker rm democyber-test
+          docker rm democyber-test 
+
+      #Tivy scan
+      - name: Build Docker image
+        run: docker build -t democyber:latest .
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+         image-ref: democyber:latest
+         format: 'table'
+         exit-code: '1'
+         severity: 'CRITICAL,HIGH'
