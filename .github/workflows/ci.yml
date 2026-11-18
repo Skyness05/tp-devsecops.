@@ -64,24 +64,20 @@ jobs:
 
       # Compiler et empaqueter (package inclut déjà la compilation)
       - name: Build Java project with Maven
-        run: mvn clean package 
+        run: mvn clean package
 
-      # Test Docker image
-      - name: Test Docker image locally
-        run: |
-          docker run -d --name democyber-test -p 8080:8080 $DOCKER_IMAGE_NAME
-          sleep 10
-          curl -f http://localhost:8080 || echo "App not responding"
-          docker stop democyber-test
-          docker rm democyber-test 
-
-      #Tivy scan
-      - name: Build Docker image
+      # Trivy scan
+      - name: Build Docker image for Trivy
         run: docker build -t democyber:latest .
+
       - name: Scan Docker image with Trivy
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
-         image-ref: democyber:latest
-         format: 'table'
-         exit-code: '1'
-         severity: 'CRITICAL,HIGH'
+          image-ref: democyber:latest
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+
+      # Push Docker image sur Docker Hub
+      - name: Push Docker image
+        run: docker push $DOCKER_IMAGE_NAME
